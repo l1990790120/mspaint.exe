@@ -4,11 +4,11 @@ const sleep = milliseconds => {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
 };
 
-sleep(1000).then(() => {
+sleep(500).then(() => {
   console.log("start");
   canvasRecorder = new CCapture({
     format: "webm",
-    framerate: FRAMERATE,
+    framerate: 30,
     verbose: true
   });
   canvasRecorder.start();
