@@ -17,8 +17,8 @@ function addStopRecordingButton() {
   window.onload = function() {
     stopButton = document.createElement("button");
     stopButton.textContent = "Stop Recording";
-    document.getElementsByClassName("stopButton")[0].appendChild(stopButton);
     stopButton.onclick = stopRecording;
+    document.getElementsByClassName("buttons")[0].appendChild(stopButton);
   };
 }
 
