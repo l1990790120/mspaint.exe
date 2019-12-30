@@ -1,15 +1,16 @@
 let canvasRecorder;
 
-canvasRecorder = new CCapture({
-  format: "webm",
-  framerate: FRAMERATE
-});
-
 const sleep = milliseconds => {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
 };
 
-sleep(100).then(() => {
+sleep(1000).then(() => {
+  console.log("start");
+  canvasRecorder = new CCapture({
+    format: "webm",
+    framerate: FRAMERATE,
+    verbose: true
+  });
   canvasRecorder.start();
 });
 
