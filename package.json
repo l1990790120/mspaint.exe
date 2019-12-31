@@ -1,0 +1,24 @@
+{
+  "name": "mspaint.exe",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/l1990790120/mspaint.exe.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/l1990790120/mspaint.exe/issues"
+  },
+  "homepage": "https://github.com/l1990790120/mspaint.exe#readme",
+  "dependencies": {
+    "p5": "^0.10.2",
+    "paper": "^0.12.4",
+    "require-globify": "^1.4.1"
+  }
+}
