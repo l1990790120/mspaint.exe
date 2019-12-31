@@ -1,59 +1,71 @@
-FRAMERATE = 24;
-let walkers = [];
+let p5 = require("p5");
 
-function setup() {
-  createCanvas(400, 400);
-  background(1);
+const c = function(p) {
+  let canvasRecorder;
+  let FRAMERATE = 24;
+  let height;
+  let width;
+  let PI = p.PI;
+  let walkers = [];
 
-  frameRate(FRAMERATE);
-}
+  p.setup = function() {
+    p.createCanvas(400, 400);
+    height = p.height;
+    width = p.width;
 
-function draw() {
-  fill(0, 25);
-  noStroke();
-  rect(0, 0, height, width);
+    p.background(1);
+    p.frameRate(FRAMERATE);
+  };
 
-  translate(height / 2, width / 2);
-  rotate((-5 * PI) / 4);
+  p.draw = function() {
+    p.fill(0, 25);
+    p.noStroke();
+    p.rect(0, 0, height, width);
 
-  for (let i = walkers.length - 1; i >= 0; i--) {
-    step = walkers[i];
+    p.translate(height / 2, width / 2);
+    p.rotate((-5 * PI) / 4);
 
-    let luckyDraw = random(0, 1);
+    for (let i = walkers.length - 1; i >= 0; i--) {
+      step = walkers[i];
 
-    if (luckyDraw < 0.4) {
-      step.goUp();
-    } else if (luckyDraw < 0.5) {
-      step.goDown();
-    } else if (luckyDraw < 0.75) {
-      step.goLeft();
-    } else if (random(0, 1) <= 1) {
-      step.goRight();
+      let luckyDraw = p.random(0, 1);
+
+      if (luckyDraw < 0.4) {
+        step.goUp();
+      } else if (luckyDraw < 0.5) {
+        step.goDown();
+      } else if (luckyDraw < 0.75) {
+        step.goLeft();
+      } else if (p.random(0, 1) <= 1) {
+        step.goRight();
+      }
+      if ((step.w <= p.random(1, 3)) | (walkers >= p.random(15, 30))) {
+        walkers.splice(i, 1);
+      }
+
+      if (canvasRecorder) {
+        canvasRecorder.capture(document.getElementById("defaultCanvas0"));
+      }
     }
-    if ((step.w <= random(1, 3)) | (this.walkers >= random(15, 30))) {
-      walkers.splice(i, 1);
-    }
 
-    if (canvasRecorder) {
-      canvasRecorder.capture(document.getElementById("defaultCanvas0"));
+    let colors = ["lightblue", "yellow", "orange", "pink", "white"];
+    for (let i = 0; i <= 10; i += 5) {
+      let s = new Step(
+        p,
+        p.random(-5, 5) * 20,
+        p.random(-5, 5) * 20,
+        p.random([20, 25, 30]),
+        p.random(5, 10),
+        p.random(colors)
+      );
+      walkers.push(s);
     }
-  }
-
-  let colors = ["lightblue", "yellow", "orange", "pink", "white"];
-  for (let i = 0; i <= 10; i += 5) {
-    let s = new Step(
-      random(-5, 5) * 20,
-      random(-5, 5) * 20,
-      random([20, 25, 30]),
-      random(5, 10),
-      random(colors)
-    );
-    walkers.push(s);
-  }
-}
+  };
+};
 
 class Step {
-  constructor(x, y, s, w, color) {
+  constructor(p, x, y, s, w, color) {
+    this.p = p;
     this.x = x;
     this.y = y;
     this.s = s;
@@ -62,13 +74,13 @@ class Step {
     this.walkers = 0;
 
     this.dot = () => {
-      fill(this.color);
-      ellipse(this.x, this.y, this.w, this.w);
+      this.p.fill(this.color);
+      this.p.ellipse(this.x, this.y, this.w, this.w);
       this.walkers++;
     };
     this.setStroke = () => {
-      stroke(this.color);
-      strokeWeight(this.w);
+      this.p.stroke(this.color);
+      this.p.strokeWeight(this.w);
       this.w -= 1;
     };
   }
@@ -79,7 +91,7 @@ class Step {
     this.x = this.x + this.s;
     this.setStroke();
 
-    line(fromX, fromY, this.x, this.y);
+    this.p.line(fromX, fromY, this.x, this.y);
     this.dot();
   }
   goDown() {
@@ -88,17 +100,17 @@ class Step {
     this.y = this.y - this.s;
     this.setStroke();
 
-    line(fromX, fromY, this.x, this.y);
+    this.p.line(fromX, fromY, this.x, this.y);
     this.dot();
   }
   goUp() {
     let fromX = this.x;
     let fromY = this.y;
     this.y = this.y + this.s;
-    stroke(this.color);
-    strokeWeight(random(1, 4));
+    this.p.stroke(this.color);
+    this.p.strokeWeight(this.p.random(1, 4));
 
-    line(fromX, fromY, this.x, this.y);
+    this.p.line(fromX, fromY, this.x, this.y);
     this.dot();
   }
   goLeft() {
@@ -107,7 +119,9 @@ class Step {
     this.x = this.x - this.s;
     this.setStroke();
 
-    line(fromX, fromY, this.x, this.y);
+    this.p.line(fromX, fromY, this.x, this.y);
     this.dot();
   }
 }
+
+new p5(c);
