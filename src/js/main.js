@@ -9,20 +9,20 @@ function startRecording(startSecond, frameRate) {
   };
   window.canvasRecorder = new CCapture({
     format: "png",
-    framerate: 30,
+    framerate: frameRate,
     verbose: true
   });
-  sleep(startSecond).then(() => {
-    window.canvasRecorder.start();
-    console.log("start recording");
-  });
+  // sleep(startSecond).then(() => {
+  //   window.canvasRecorder.start();
+  //   console.log("start recording");
+  // });
 }
 
 function stopRecording() {
   stopButton.onclick = e => {
     window.canvasRecorder.stop();
     window.canvasRecorder.save();
-    // window.canvasRecorder = null;
+    window.canvasRecorder = null;
   };
   // remove button after click, it requires multiple clicks
   // document.getElementsByClassName("stopButton")[0].removeChild(stopButton);
@@ -52,5 +52,5 @@ function addStopRecordingButton() {
 }
 
 globRequire;
-startRecording(getParamFromUrl("start-second"), getParamFromUrl("frame-rate"));
 appendSketch(getParamFromUrl("sketch"));
+startRecording(getParamFromUrl("start-second"), getParamFromUrl("frame-rate"));
