@@ -1,5 +1,3 @@
-let canvasRecorder;
-
 function startRecording(startSecond, frameRate) {
   if (!startSecond | !frameRate) {
     return null;
@@ -9,23 +7,22 @@ function startRecording(startSecond, frameRate) {
   const sleep = milliseconds => {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
   };
-
+  window.canvasRecorder = new CCapture({
+    format: "png",
+    framerate: 30,
+    verbose: true
+  });
   sleep(startSecond).then(() => {
+    window.canvasRecorder.start();
     console.log("start recording");
-    canvasRecorder = new CCapture({
-      format: "webm",
-      framerate: frameRate,
-      verbose: true
-    });
-    canvasRecorder.start();
   });
 }
 
 function stopRecording() {
   stopButton.onclick = e => {
-    canvasRecorder.stop();
-    canvasRecorder.save();
-    canvasRecorder = null;
+    window.canvasRecorder.stop();
+    window.canvasRecorder.save();
+    // window.canvasRecorder = null;
   };
   // remove button after click, it requires multiple clicks
   // document.getElementsByClassName("stopButton")[0].removeChild(stopButton);
@@ -55,5 +52,5 @@ function addStopRecordingButton() {
 }
 
 globRequire;
-appendSketch(getParamFromUrl("sketch"));
 startRecording(getParamFromUrl("start-second"), getParamFromUrl("frame-rate"));
+appendSketch(getParamFromUrl("sketch"));
