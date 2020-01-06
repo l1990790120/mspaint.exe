@@ -12,10 +12,10 @@ function startRecording(startSecond, frameRate) {
     framerate: frameRate,
     verbose: true
   });
-  // sleep(startSecond).then(() => {
-  //   window.canvasRecorder.start();
-  //   console.log("start recording");
-  // });
+  sleep(startSecond).then(() => {
+    window.canvasRecorder.start();
+    console.log("start recording");
+  });
 }
 
 function stopRecording() {
