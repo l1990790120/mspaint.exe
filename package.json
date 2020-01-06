@@ -19,6 +19,7 @@
   "dependencies": {
     "p5": "^0.10.2",
     "paper": "^0.12.4",
-    "require-globify": "^1.4.1"
+    "require-globify": "^1.4.1",
+    "three": "^0.112.1"
   }
 }

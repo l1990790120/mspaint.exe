@@ -1,5 +1,5 @@
-function startRecording(startSecond, frameRate) {
-  if (!startSecond | !frameRate) {
+function startRecording(startSecond, frameRate, format = "png") {
+  if ((startSecond == null) | (!frameRate == null)) {
     return null;
   } else {
     addStopRecordingButton();
@@ -7,15 +7,16 @@ function startRecording(startSecond, frameRate) {
   const sleep = milliseconds => {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
   };
-  window.canvasRecorder = new CCapture({
-    format: "png",
-    framerate: frameRate,
-    verbose: true
+
+  sleep(startSecond).then(() => {
+    window.canvasRecorder = new CCapture({
+      format: format,
+      framerate: frameRate,
+      verbose: true
+    });
+    window.canvasRecorder.start();
+    console.log("start recording");
   });
-  // sleep(startSecond).then(() => {
-  //   window.canvasRecorder.start();
-  //   console.log("start recording");
-  // });
 }
 
 function stopRecording() {
@@ -28,10 +29,14 @@ function stopRecording() {
   // document.getElementsByClassName("stopButton")[0].removeChild(stopButton);
 }
 
-function getParamFromUrl(paramName) {
+function getParamFromUrl(paramName, defaultValue) {
   const urlParams = new URLSearchParams(window.location.search);
   const paramValue = urlParams.get(paramName);
-  return paramValue;
+  if ((paramValue == null) & (defaultValue !== null)) {
+    return defaultValue;
+  } else {
+    return paramValue;
+  }
 }
 
 function globRequire() {
@@ -53,4 +58,8 @@ function addStopRecordingButton() {
 
 globRequire;
 appendSketch(getParamFromUrl("sketch"));
-startRecording(getParamFromUrl("start-second"), getParamFromUrl("frame-rate"));
+startRecording(
+  getParamFromUrl("start-second"),
+  getParamFromUrl("frame-rate"),
+  getParamFromUrl("format", "png")
+);
