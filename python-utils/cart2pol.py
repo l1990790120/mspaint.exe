@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image
 
 
-def cart2pol(img_dir, out_dir, rot=90):
+def cart2pol(img_dir, out_dir, rot=90, radius=1):
 
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
@@ -18,13 +18,13 @@ def cart2pol(img_dir, out_dir, rot=90):
 
         if rot % 90 != 0:
             raise ValueError("rot must be multiple or 90.")
-        for rot_i in range(1, rot % 90 + 1):
-            rot_src = np.rot90(src)\
+        for rot_i in range(rot % 90 + 1):
+            rot_src = np.rot90(src)
 
         polar_output = cv2.linearPolar(
             rot_src,
             (int(w / 2), int(h / 2)),
-            w,
+            w/radius,
             flags=(cv2.WARP_FILL_OUTLIERS + cv2.WARP_INVERSE_MAP),
         )
 
