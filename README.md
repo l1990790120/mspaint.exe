@@ -19,7 +19,7 @@ ma
 python3 -m http.server --directory src
 ```
 
-Sketches on available at [http://localhost:8000/?sketch=spring-character-3d]([http://localhost:8000/?sketch=spring-character-3d])
+Sketches on available at [http://localhost:8000/?sketch=spring-character-3d](http://localhost:8000/?sketch=spring-character-3d)
 
 Recording is enabled when `start-second` and `frame-rate` is provided in the url params. One can also change `format` to `webm` so it records video instead (default is set to `png`).
 
