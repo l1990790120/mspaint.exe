@@ -5,7 +5,7 @@ The repository contains source code for generating motions on
 
 ## Development
 
-Jvascript packages are managed by npm and compiled by browserify.
+Javascript packages are managed by npm and compiled by browserify.
 
 ```bash
 npm install
@@ -27,3 +27,10 @@ Recording is enabled when `start-second` and `frame-rate` is provided in the url
 
 - `src`: contains all the sketch assets.
 - `python-utils`: contains some of the opencv transformation to post-process images captured from canvas (`p5.js` or `three.js`)
+
+## Misc
+
+Things worth knowing.
+
+* When working with type in 3d, you can covert ttf to typeface at
+[https://gero3.github.io/facetype.js/](https://gero3.github.io/facetype.js/)
