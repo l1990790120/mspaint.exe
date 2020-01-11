@@ -1,7 +1,29 @@
+# mspaint.exe
+
+The repository contains source code for generating motions on
+[https://www.instagram.com/engineer.lulu/](https://www.instagram.com/engineer.lulu/).
+
+## Development
+
+Jvascript packages are managed by npm and compiled by browserify.
+
 ```bash
-npm install -g browserify
-npm install -g watchify
+npm install
+npm install -g browserify watchify
+# watch and compile js
 watchify -t require-globify src/js/main.js -o src/js/bundle.js -v
+ma
+# serves file to localhost
+# this is only needed because some of the packages checks for cors when loading
+# assets from url
+python3 -m http.server --directory src
 ```
 
-available at src/index.html
+Sketches on available at [http://localhost:8000/?sketch=spring-character-3d]([http://localhost:8000/?sketch=spring-character-3d])
+
+Recording is enabled when `start-second` and `frame-rate` is provided in the url params. One can also change `format` to `webm` so it records video instead (default is set to `png`).
+
+## Packages
+
+- `src`: contains all the sketch assets.
+- `python-utils`: contains some of the opencv transformation to post-process images captured from canvas (`p5.js` or `three.js`)
