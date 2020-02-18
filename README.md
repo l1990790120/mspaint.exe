@@ -12,7 +12,7 @@ npm install
 npm install -g browserify watchify
 # watch and compile js
 watchify -t require-globify src/js/main.js -o src/js/bundle.js -v
-ma
+
 # serves file to localhost
 # this is only needed because some of the packages checks for cors when loading
 # assets from url

@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/l1990790120/mspaint.exe#readme",
   "dependencies": {
+    "aframe": "^1.0.3",
     "p5": "^0.10.2",
     "paper": "^0.12.4",
     "require-globify": "^1.4.1",
