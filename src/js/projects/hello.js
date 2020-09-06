@@ -1,10 +1,10 @@
-let p5 = require("p5");
+const p5 = require("p5");
 
-const c = function(p) {
+const c = function (p) {
   let height;
   let width;
 
-  p.setup = function() {
+  p.setup = function () {
     p.createCanvas(400, 400);
     p.frameRate(30);
     height = p.height;
@@ -14,7 +14,7 @@ const c = function(p) {
     p.noStroke();
   };
 
-  p.draw = function() {
+  p.draw = function () {
     frameCount = p.frameCount;
 
     p.noStroke();
