@@ -1,9 +1,12 @@
 const p5 = require("p5");
 const data = require("./kanban-boxes");
 
+const mobile = 980;
+
 const c = (p) => {
   let boxes = [];
   let xx = 100;
+  let margin = xx / 8;
   let fonts = {};
 
   p.preload = () => {
@@ -13,8 +16,12 @@ const c = (p) => {
   p.setup = () => {
     p.frameRate(10);
 
-    xx = Math.floor(p.windowWidth / 25);
-    const margin = Math.floor(xx / 8);
+    xx = Math.floor(p.displayWidth / 25);
+    margin = Math.floor(xx / 8);
+    if (p.displayWidth <= mobile) {
+      xx = Math.floor(p.displayWidth / 5);
+      margin = Math.floor(xx / 8);
+    }
 
     fonts = {
       "Shrikhand-Regular": p.loadFont("assets/fonts/Shrikhand-Regular.ttf"),
@@ -25,6 +32,12 @@ const c = (p) => {
       lu: p.loadFont("assets/fonts/lu.ttf"),
       "jf-openhuninn": p.loadFont("assets/fonts/jf-openhuninn-1.1.ttf"),
       twicon: p.loadFont("assets/fonts/twicon.otf"),
+      "Cinzel-VariableFont_wght": p.loadFont(
+        "assets/fonts/Cinzel-VariableFont_wght.ttf"
+      ),
+      "EmblemaOne-Regular": p.loadFont("assets/fonts/EmblemaOne-Regular.ttf"),
+      "Syncopate-Bold": p.loadFont("assets/fonts/Syncopate-Bold.ttf"),
+      "Limelight-Regular": p.loadFont("assets/fonts/Limelight-Regular.ttf"),
     };
 
     for (const ix in data) {
@@ -67,8 +80,12 @@ const c = (p) => {
       boxes.push(box);
     }
 
-    const layout = new LayoutAlgorithm(boxes, p.windowWidth, margin, xx);
-    layout.arrangeCoords();
+    const layout = new LayoutAlgorithm(boxes, p.displayWidth, margin, xx);
+    if (p.displayWidth <= mobile) {
+      layout.arrangeCoords("end");
+    } else {
+      layout.arrangeCoords("mid");
+    }
 
     let height = 0;
     let width = 0;
@@ -130,7 +147,7 @@ class LayoutAlgorithm {
     } else {
       dir = 1;
     }
-    nx = x + dir * (this.xx + this.margin);
+    nx = x + dir * (this.xx + this.margin + 1);
 
     if (nx <= this.margin || nx >= this.vw - this.xx) {
       nx = from + this.margin;
@@ -151,7 +168,7 @@ class LayoutAlgorithm {
       x = Math.floor(this.vw / 2);
     }
     if (start === "end") {
-      x = this.vw;
+      x = this.vw - this.margin;
     }
 
     const from = x;
