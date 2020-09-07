@@ -6,22 +6,12 @@ const mobile = 980;
 const c = (p) => {
   let boxes = [];
   let xx = 100;
-  let margin = xx / 8;
+  let margin = xx / 7;
   let fonts = {};
+  // var texture;
 
   p.preload = () => {
-    // const bg = p.loadImage('assets/textures/texture.jpg');
-  };
-
-  p.setup = () => {
-    p.frameRate(10);
-
-    xx = Math.floor(p.displayWidth / 25);
-    margin = Math.floor(xx / 8);
-    if (p.displayWidth <= mobile) {
-      xx = Math.floor(p.displayWidth / 5);
-      margin = Math.floor(xx / 8);
-    }
+    // texture = p.loadImage("assets/textures/texture.jpg");
 
     fonts = {
       "Shrikhand-Regular": p.loadFont("assets/fonts/Shrikhand-Regular.ttf"),
@@ -38,7 +28,19 @@ const c = (p) => {
       "EmblemaOne-Regular": p.loadFont("assets/fonts/EmblemaOne-Regular.ttf"),
       "Syncopate-Bold": p.loadFont("assets/fonts/Syncopate-Bold.ttf"),
       "Limelight-Regular": p.loadFont("assets/fonts/Limelight-Regular.ttf"),
+      fa: p.loadFont("fontawesome-5-Solid-900.otf"),
     };
+  };
+
+  p.setup = () => {
+    p.frameRate(10);
+
+    xx = Math.floor(p.displayWidth / 25);
+    margin = Math.floor(xx / 7.5);
+    if (p.displayWidth <= mobile) {
+      xx = Math.floor(p.displayWidth / 5);
+      margin = Math.floor(xx / 8);
+    }
 
     for (const ix in data) {
       const el = data[ix];
@@ -100,7 +102,7 @@ const c = (p) => {
       }
     });
 
-    p.createCanvas(width + margin, height + margin);
+    p.createCanvas(width + margin, height + xx);
   };
 
   p.draw = () => {
@@ -113,13 +115,13 @@ const c = (p) => {
       x.hover();
     });
 
-    // if (frameCount == 1) {
-    //   window.canvasRecorder.start();
-    // }
+    if (frameCount == 1) {
+      window.canvasRecorder.start();
+    }
 
-    // if (window.canvasRecorder) {
-    //   window.canvasRecorder.capture(document.getElementById("defaultCanvas0"));
-    // }
+    if (window.canvasRecorder) {
+      window.canvasRecorder.capture(document.getElementById("defaultCanvas0"));
+    }
   };
 
   p.mousePressed = () => {
@@ -331,7 +333,13 @@ class NeonBox {
       if (this.rect) {
         this.p.rect(this.x, this.y, this.w, this.h, 10);
       }
-      this.p.text(this.text, this.x + this.xx / 2, this.y, this.w, this.h);
+      this.p.text(
+        this.text,
+        this.x + this.xx / 2,
+        this.y + this.xx / 2,
+        this.w,
+        this.h
+      );
     }
 
     this.p.pop();
@@ -420,8 +428,32 @@ class LightBox {
     this.p.rect(this.x, this.y, this.w, this.h);
   }
   lightOn() {
-    this.p.fill(this.hexAlpha(this.bgColor, 200));
+    this.p.fill(this.hexAlpha(this.bgColor, 180));
     this.p.rect(this.x, this.y, this.w, this.h);
+    this.drawReflectionGradient();
+  }
+
+  drawReflectionGradient() {
+    const bars = 10;
+    const offset = 5;
+    for (let i = this.y + this.h; i <= this.y + this.h + bars; i++) {
+      const ci = this.p.map(i, this.y + this.h, this.y + this.h + bars, 0, 1);
+      const di = this.p.map(
+        i,
+        this.y + this.h,
+        this.y + this.h + bars,
+        this.w - 3,
+        this.w - 20
+      );
+      const c = this.p.lerpColor(
+        this.hexAlpha(this.bgColor, 180),
+        this.hexAlpha(this.bgColor, 0),
+        ci
+      );
+      this.p.strokeWeight(3);
+      this.p.stroke(c);
+      this.p.line(this.x + di, i + offset, this.x + this.w - di, i + offset);
+    }
   }
 
   textOn() {
@@ -431,24 +463,21 @@ class LightBox {
     this.p.textFont(this.font);
 
     if (this.dir === "x") {
-      this.p.text(this.text, this.x + this.xx / 2, this.y, this.w, this.h);
+      this.p.text(
+        this.text,
+        this.x + this.xx / 2,
+        this.y + this.xx / 3,
+        this.w,
+        this.h
+      );
     }
 
     if (this.dir === "y") {
       this.text.split("").forEach((char, ix) => {
         var x, y;
-        // if (this.dir === "y") {
+
         x = this.x + Math.floor((ix * this.size) / this.h) * this.size;
         y = this.y + ((ix * this.size) % this.h) + this.size * 0.9;
-        // }
-
-        // if (this.dir === "x") {
-        //   x = this.x + ((ix * this.size) % this.w);
-        //   y =
-        //     this.y +
-        //     Math.floor((ix * this.size) / this.w) * this.size +
-        //     this.size * 0.9;
-        // }
 
         this.p.text(char, x, y);
       });
