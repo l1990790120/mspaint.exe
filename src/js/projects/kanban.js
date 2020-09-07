@@ -3,18 +3,20 @@ const data = require("./kanban-boxes");
 
 const c = (p) => {
   let boxes = [];
+  let xx = 100;
+  let fonts = {};
 
   p.preload = () => {
     // const bg = p.loadImage('assets/textures/texture.jpg');
   };
 
   p.setup = () => {
-    p.frameRate(5);
+    p.frameRate(10);
 
-    const xx = Math.floor(p.windowWidth / 20);
+    xx = Math.floor(p.windowWidth / 25);
     const margin = Math.floor(xx / 8);
 
-    const fonts = {
+    fonts = {
       "Shrikhand-Regular": p.loadFont("assets/fonts/Shrikhand-Regular.ttf"),
       "ZCOOLQingKeHuangYou-Regular": p.loadFont(
         "assets/fonts/ZCOOLQingKeHuangYou-Regular.ttf"
@@ -22,12 +24,14 @@ const c = (p) => {
       "Eczar-ExtraBold": p.loadFont("assets/fonts/Eczar-ExtraBold.ttf"),
       lu: p.loadFont("assets/fonts/lu.ttf"),
       "jf-openhuninn": p.loadFont("assets/fonts/jf-openhuninn-1.1.ttf"),
+      twicon: p.loadFont("assets/fonts/twicon.otf"),
     };
 
     for (const ix in data) {
       const el = data[ix];
-      boxes.push(
-        new LightBox(
+      var box;
+      if (el.type === "lightbox") {
+        box = new LightBox(
           p,
           el.w,
           el.h,
@@ -40,8 +44,27 @@ const c = (p) => {
           el.size * xx,
           el.url,
           xx
-        )
-      );
+        );
+      }
+
+      if (el.type === "neon") {
+        box = new NeonBox(
+          p,
+          el.w,
+          el.h,
+          el.text_color,
+          el.direction,
+          el.text,
+          fonts[el.font],
+          el.size * xx,
+          el.rect === undefined ? true : el.rect,
+          el.thickness || 40,
+          el.alpha || 40,
+          "/",
+          xx
+        );
+      }
+      boxes.push(box);
     }
 
     const layout = new LayoutAlgorithm(boxes, p.windowWidth, margin, xx);
@@ -52,7 +75,6 @@ const c = (p) => {
     boxes.forEach((box, i) => {
       const [boxX, boxY] = layout.coords[i];
       box.setXY(boxX, boxY);
-
       if (boxY + box.h > height) {
         height = boxY + box.h;
       }
@@ -103,14 +125,14 @@ class LayoutAlgorithm {
     var nx, ny;
     let dir = 1;
 
-    if (x <= from + this.margin || x <= from) {
+    if (x <= from + this.margin) {
       dir = -1;
     } else {
       dir = 1;
     }
     nx = x + dir * (this.xx + this.margin);
 
-    if (nx < 0 || nx > this.vw) {
+    if (nx <= this.margin || nx >= this.vw - this.xx) {
       nx = from + this.margin;
       ny = y + (this.xx + this.margin);
     } else {
@@ -175,44 +197,127 @@ class LayoutAlgorithm {
       const fromBoxY = cY;
       const toBoxY = cY + ib.h;
 
-      const fromBoxXYOverlapped =
-        toX >= fromBoxX &&
-        fromBoxX >= fromX &&
-        toY >= fromBoxY &&
-        fromBoxY >= fromY;
-      const toBoxXYOverlapped =
-        toX >= toBoxX && toBoxX >= fromX && toY >= toBoxY && toBoxY >= fromY;
-      const fromBoxXToBoxYOverlapped =
-        toX >= fromBoxX &&
-        fromBoxX >= fromX &&
-        toY >= toBoxY &&
-        toBoxY >= fromY;
-      const toBoxXFromBoxYOverlapped =
-        toX >= toBoxX &&
-        toBoxX >= fromX &&
-        toY >= fromBoxY &&
-        fromBoxY >= fromY;
+      const XOverlap1 =
+        (toX >= fromBoxX && fromBoxX >= fromX) ||
+        (toX >= toBoxX && toBoxX >= fromX);
+      const XOverlap2 =
+        (toBoxX >= fromX && fromX >= fromBoxX) ||
+        (toBoxX >= toX && toX >= fromBoxX);
+      const YOverlap1 =
+        (toY >= fromBoxY && fromBoxY >= fromY) ||
+        (toY >= toBoxY && toBoxY >= fromY);
+      const YOverlap2 =
+        (toBoxY >= fromY && fromY >= fromBoxY) ||
+        (toBoxY >= toY && toY >= fromBoxY);
 
       // NOTE: for debug, check overlap
       // console.log(box.text);
       // console.log(ib.text);
-      // console.log(fromX, toX, fromBoxX);
-      // console.log(fromY, toY, fromBoxY);
-      // console.log(fromX, toX, toBoxX);
-      // console.log(fromY, toY, toBoxY);
-      // console.log(fromBoxXYOverlapped, toBoxXYOverlapped);
-      // console.log(fromBoxXToBoxYOverlapped, toBoxXFromBoxYOverlapped);
+      // console.log(fromX, toX);
+      // console.log(fromY, toY);
+      // console.log(fromBoxX, toBoxX);
+      // console.log(fromBoxY, toBoxY);
+      // console.log(XOverlap1 || XOverlap2, YOverlap1 || YOverlap2);
 
-      if (
-        fromBoxXYOverlapped ||
-        toBoxXYOverlapped ||
-        fromBoxXToBoxYOverlapped ||
-        toBoxXFromBoxYOverlapped
-      ) {
+      if ((XOverlap1 || XOverlap2) && (YOverlap1 || YOverlap2)) {
         return false;
       }
     }
     return true;
+  }
+}
+
+class NeonBox {
+  constructor(
+    p,
+    w,
+    h,
+    textColor,
+    dir,
+    text,
+    font,
+    size,
+    rect = true,
+    thickness = 50,
+    alpha = 40,
+    url = "#",
+    xx = 100
+  ) {
+    this.p = p;
+    this.xx = Math.floor(xx);
+    this.w = w * this.xx;
+    this.h = h * this.xx;
+
+    this.textColor = textColor;
+    this.dir = dir;
+    this.text = text;
+
+    this.font = font;
+    this.url = url;
+    if (!size) {
+      this.size = this.xx;
+    } else {
+      this.size = Math.floor(size);
+    }
+    this.rect = rect;
+    this.thickness = thickness;
+    this.alpha = alpha;
+  }
+
+  setXY(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  hexToColor(hex) {
+    const c = this.p.color(hex);
+    const red = this.p.red(c);
+    const green = this.p.green(c);
+    const blue = this.p.blue(c);
+    return [red, green, blue];
+  }
+
+  hover() {}
+  clicked() {}
+
+  show(i, debug = false) {
+    this.p.push();
+    this.p.blendMode(this.p.BLEND);
+
+    let alpha = this.alpha;
+    if (this.p.random(1) < 0.05) {
+      alpha = this.alpha * 0.2;
+    }
+
+    this.p.noFill();
+
+    if (debug) {
+      this.p.stroke(255);
+      this.p.fill(0);
+      this.p.rect(this.x, this.y, this.w, this.h);
+    }
+
+    this.p.blendMode(this.p.SCREEN);
+    this.p.textSize(this.size);
+    this.p.textFont(this.font);
+    const [r, g, b] = this.hexToColor(this.textColor);
+
+    for (var i = 1; i < this.thickness; ++i) {
+      this.p.strokeWeight(i * 0.25);
+      const [rm, gm, bm] = [
+        this.p.map(i, 0, 50, r - 50, r),
+        this.p.map(i, 0, 50, g - 50, g),
+        this.p.map(i, 0, 50, b - 50, b),
+      ];
+      this.p.stroke(rm, gm, bm, alpha);
+
+      if (this.rect) {
+        this.p.rect(this.x, this.y, this.w, this.h, 10);
+      }
+      this.p.text(this.text, this.x + this.xx / 2, this.y, this.w, this.h);
+    }
+
+    this.p.pop();
   }
 }
 
@@ -243,7 +348,7 @@ class LightBox {
     this.textColor = textColor;
     this.bgColor = bgColor;
     this.dir = dir;
-    this.text = text.split("");
+    this.text = text;
 
     this.font = font;
     this.url = url;
@@ -303,30 +408,38 @@ class LightBox {
   }
 
   textOn() {
-    this.text.forEach((char, ix) => {
-      this.p.noStroke();
-      this.p.fill(this.textColor);
-      this.p.textSize(this.size);
-      // this.p.filter(this.p.BLUR, 10);
-      var x, y;
-      if (this.dir === "y") {
+    this.p.noStroke();
+    this.p.fill(this.textColor);
+    this.p.textSize(this.size);
+    this.p.textFont(this.font);
+
+    if (this.dir === "x") {
+      this.p.text(this.text, this.x + this.xx / 2, this.y, this.w, this.h);
+    }
+
+    if (this.dir === "y") {
+      this.text.split("").forEach((char, ix) => {
+        var x, y;
+        // if (this.dir === "y") {
         x = this.x + Math.floor((ix * this.size) / this.h) * this.size;
         y = this.y + ((ix * this.size) % this.h) + this.size * 0.9;
-      }
+        // }
 
-      if (this.dir === "x") {
-        x = this.x + ((ix * this.size) % this.w);
-        y =
-          this.y +
-          Math.floor((ix * this.size) / this.w) * this.size +
-          this.size * 0.9;
-      }
-      this.p.textFont(this.font);
-      this.p.text(char, x, y);
-    });
+        // if (this.dir === "x") {
+        //   x = this.x + ((ix * this.size) % this.w);
+        //   y =
+        //     this.y +
+        //     Math.floor((ix * this.size) / this.w) * this.size +
+        //     this.size * 0.9;
+        // }
+
+        this.p.text(char, x, y);
+      });
+    }
   }
 
   show(i, debug = false) {
+    this.p.push();
     const dur = Math.floor(Math.random() * this.rate);
 
     if (debug) {
@@ -341,6 +454,7 @@ class LightBox {
       this.lightOn();
     }
     this.textOn();
+    this.p.pop();
   }
 }
 
